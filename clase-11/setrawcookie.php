@@ -1,0 +1,3 @@
+<?php
+
+setrawcookie("prueba", time());
