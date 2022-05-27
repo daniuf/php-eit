@@ -7,6 +7,8 @@
    * email & password
    * Metodo: POST 
    */
+   ini_set('date.timezone', 'America/Argentina/Buenos_Aires');
+   require_once('funciones.php');
  
    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -19,37 +21,32 @@
      if (empty($email) == false && empty($password) == false) {
 	//Como recibimos email y password, me puedo conectar a DB para validar email/pass
 
-	$db_dsn = 'mysql:dbname=educacion_it;host=127.0.0.1';
-	$db_user = 'eit';
-	$db_pass = '1Qa2Ws3Ed@@';
+	    $gbd = conectarDB('mysql','127.0.0.1', 'eit', '1Qa2Ws3Ed@@', 'educacion_it');
 
-	try {
-	    $gbd = new PDO($db_dsn, $db_user, $db_pass);
-	    //Validar si el email/pass existen en la tabla usuario
-	    $query = "SELECT nombre,email, fecha_creacion ";
-            $query .= "FROM usuario ";
-	    $query .= "WHERE email = '{$email}' AND pass = '{$password}' ";
+	    if (is_object($gbd)) {
+	     //Validar si el email/pass existen en la tabla usuario
+	     $resultado = login($gbd, $email, $password);
 
-	    $users = $gbd->query($query, PDO::FETCH_ASSOC);
+	     if ($resultado[0] == true) {
 
-	    if ($users->rowCount() > 0) {
-
+              actualizar_ultima_fecha_login($gbd, $email);
 	      $encontrado = true;
               session_start();
-	      foreach ($users as $key => $value) {
+
+	      foreach ($resultado[1] as $key => $value) {
 		$_SESSION[$key] = $value;
 	      }
 	      var_dump($_SESSION);
        	      //header("Location: mostrar_sesion.php");
-            }
-	} catch (PDOException $e) {
-	    //echo 'Falló la conexión: ' . $e->getMessage();
-	}
+             }
+	    } else {
+	     die("Error general del sistema");
+	    }
 
-       if ($encontrado == false) {
+         if ($encontrado == false) {
 
-         $error = "Credenciales incorrectas";
-       }
+           $error = "Credenciales incorrectas";
+         }
      }
    }
 ?>
