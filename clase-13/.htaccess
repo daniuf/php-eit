@@ -1,0 +1,14 @@
+
+#<Files phpinfo.php
+#Order allow,deny
+#Deny from all
+#</Files>
+
+RedirectMatch 500 phpinfo.php
+ErrorDocument 404 /clase-13/404.php
+ErrorDocument 500 /clase-13/500.php
+
+# Enciendo modulo de reescritura de Apache (mod_rewrite)
+RewriteEngine On
+RewriteRule ^saludar/([A-Za-z]+)$		hola.php?mensaje=$1 [END]
+RewriteRule ^saludar/([A-Za-z]+)/([A-Za-z]+)$	hola2.php?mensaje=$1&ciudad=$2 [END]
